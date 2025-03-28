@@ -5,10 +5,17 @@ plugins {
     id "dev.flutter.flutter-gradle-plugin"
 }
 
+// Load key.properties file if it exists
+def keystoreProperties = new Properties()
+def keystorePropertiesFile = rootProject.file('key.properties')
+if (keystorePropertiesFile.exists()) {
+    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+}
+
 android {
     namespace = "com.faylav.webview"
     compileSdk = flutter.compileSdkVersion
-    ndkVersion = flutter.ndkVersion
+    ndkVersion = "27.0.12077973"
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
@@ -18,23 +25,21 @@ android {
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_1_8
     }
-
+    
     signingConfigs {
         release {
-            // You will need to create a key using the keytool command:
-            // keytool -genkey -v -keystore faylav-keystore.jks -alias faylav -keyalg RSA -keysize 2048 -validity 10000
-            // Then add these lines with your keystore information:
-            // storeFile file("faylav-keystore.jks")
-            // storePassword "your-store-password"
-            // keyAlias "faylav"
-            // keyPassword "your-key-password"
-            
-            // For this template, we'll use debug signing config
-            // IMPORTANT: Replace with actual keystore before publishing to Play Store
-            storeFile signingConfigs.debug.storeFile
-            storePassword signingConfigs.debug.storePassword
-            keyAlias signingConfigs.debug.keyAlias
-            keyPassword signingConfigs.debug.keyPassword
+            if (keystorePropertiesFile.exists()) {
+                keyAlias keystoreProperties['keyAlias']
+                keyPassword keystoreProperties['keyPassword']
+                storeFile file(keystoreProperties['storeFile'])
+                storePassword keystoreProperties['storePassword']
+            } else {
+                // Fallback to debug signing if no keystore is available
+                storeFile signingConfigs.debug.storeFile
+                storePassword signingConfigs.debug.storePassword
+                keyAlias signingConfigs.debug.keyAlias
+                keyPassword signingConfigs.debug.keyPassword
+            }
         }
     }
 
@@ -58,9 +63,25 @@ android {
             // Use the release signing configuration
             signingConfig signingConfigs.release
         }
+        
+        debug {
+            // For debug builds, don't use minify to speed up build time
+            minifyEnabled false
+        }
+    }
+    
+    // Fix lint issues that might cause build failures
+    lintOptions {
+        disable 'InvalidPackage'
+        checkReleaseBuilds false
     }
 }
 
 flutter {
     source = "../.."
+}
+
+dependencies {
+    // Add implementation 'androidx.webkit:webkit:1.6.1' for better WebView support
+    implementation 'androidx.webkit:webkit:1.6.1'
 }

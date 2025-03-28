@@ -9,6 +9,7 @@
 
 # WebView
 -keep class android.webkit.** { *; }
+-keep class androidx.webkit.** { *; }
 
 # Keep external URLs and web view related classes
 -keepclassmembers class * {
@@ -19,4 +20,17 @@
 -keep class com.fluttercommunity.connectivity_plus.** { *; }
 
 # URL Launcher plugin
--keep class io.flutter.plugins.urllauncher.** { *; } 
+-keep class io.flutter.plugins.urllauncher.** { *; }
+
+# Additional rules to prevent common crashes
+-keep class com.faylav.webview.** { *; }
+
+# Keep JavaScript interface methods
+-keepattributes JavascriptInterface
+-keepattributes *Annotation*
+
+# For enumeration classes
+-keepclassmembers enum * {
+    public static **[] values();
+    public static ** valueOf(java.lang.String);
+} 
