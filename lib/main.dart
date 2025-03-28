@@ -3,6 +3,9 @@ import 'package:webview_flutter/webview_flutter.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import 'splash_screen.dart';
+import 'privacy_policy.dart';
+
 void main() {
   runApp(const FaylavWebViewApp());
 }
@@ -15,10 +18,13 @@ class FaylavWebViewApp extends StatelessWidget {
     return MaterialApp(
       title: 'Faylav WebView',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: const Color(0xFFFF3399), // Faylav pink color
+          primary: const Color(0xFFFF3399),
+        ),
         useMaterial3: true,
       ),
-      home: const WebViewScreen(),
+      home: const SplashScreen(),
       debugShowCheckedModeBanner: false,
     );
   }
@@ -144,10 +150,21 @@ class _WebViewScreenState extends State<WebViewScreen> {
               if (!_hasInternet) _buildNoInternetView(),
               if (_isLoading && _hasInternet)
                 const Center(
-                  child: CircularProgressIndicator(),
+                  child: CircularProgressIndicator(
+                    color: Color(0xFFFF3399), // Faylav pink color
+                  ),
                 ),
             ],
           ),
+        ),
+        floatingActionButton: FloatingActionButton(
+          backgroundColor: const Color(0xFFFF3399),
+          foregroundColor: Colors.white,
+          mini: true,
+          child: const Icon(Icons.menu),
+          onPressed: () {
+            _showOptionsMenu(context);
+          },
         ),
       ),
     );
@@ -185,6 +202,51 @@ class _WebViewScreenState extends State<WebViewScreen> {
           ),
         ],
       ),
+    );
+  }
+
+  void _showOptionsMenu(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                leading: const Icon(Icons.refresh, color: Color(0xFFFF3399)),
+                title: const Text('Reload Page'),
+                onTap: () {
+                  Navigator.pop(context);
+                  _controller.reload();
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.policy, color: Color(0xFFFF3399)),
+                title: const Text('Privacy Policy'),
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const PrivacyPolicyScreen(),
+                    ),
+                  );
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.home, color: Color(0xFFFF3399)),
+                title: const Text('Go to Home'),
+                onTap: () {
+                  Navigator.pop(context);
+                  _controller.loadRequest(
+                      Uri.parse('https://faylav.com/customer/auth/login'));
+                },
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }
