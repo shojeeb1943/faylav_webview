@@ -1,0 +1,13 @@
+Faylav is the official mobile application for convenient access to the Faylav platform. 
+
+This app provides a seamless experience to access all Faylav services right from your mobile device without the need to open a browser.
+
+Features:
+• Easy Login: Quick access to your Faylav account
+• Session Persistence: Stay logged in between sessions
+• Offline Detection: Notifies you when your connection is lost
+• Simple Navigation: Easy to use interface with proper back navigation
+
+The app requires internet access to connect to Faylav services but doesn't collect any additional data from your device.
+
+Download now and get easy access to all Faylav services on the go! 
